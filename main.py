@@ -31,19 +31,31 @@ def restart_app():
     os.system('spotify')
     print('ad')
 
-async def play_media():
+async def play_media(album_title):
     sessions = await MediaManager.request_async()
     current_session = sessions.get_current_session()
     TARGET_ID = current_session.source_app_user_model_id
 
-    if current_session is None:
-        raise Exception('Нет активной медиа-сессии')
+    while True:
+        if current_session is None:
+            raise Exception('Нет активной медиа-сессии')
 
-    if current_session.source_app_user_model_id == TARGET_ID:
-        await current_session.try_play_async()
-        print('Воспроизведение запущено!')
-    else:
-        raise Exception(f'Программа {TARGET_ID} не является текущей медиа-сессией')
+        if current_session.source_app_user_model_id == TARGET_ID:
+            info = await current_session.try_get_media_properties_async()
+            info_dict = {song_attr: info.__getattribute__(song_attr) for song_attr in dir(info) if
+                         song_attr[0] != '_'}
+            info_dict['genres'] = list(info_dict['genres'])
+            album_title = info_dict['album_title']
+
+            if album_title == '':
+                continue
+
+            await current_session.try_play_async()
+            await current_session.try_skip_next_async()
+            print('Воспроизведение запущено!')
+            break
+        else:
+            raise Exception(f'Программа {TARGET_ID} не является текущей медиа-сессией')
 
 
 if __name__ == '__main__':
@@ -54,8 +66,8 @@ if __name__ == '__main__':
             print(current_media_info)
             if current_media_info['title'] == 'Advertisement':
                 restart_app()
-                time.sleep(1)
-                asyncio.run(play_media())
+                time.sleep(2)
+                asyncio.run(play_media(current_media_info['album_title']))
 
         except Exception as e:
             print(f'Ошибка: {e}')
