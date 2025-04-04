@@ -24,7 +24,7 @@ git clone https://github.com/Jevelin4k/Spotify_add_blocker.git
 
 schtasks /create /tn "Spotify_ad_blocker" /tr "C:\Program Files (x86)\Spotify_ad_blocker\Spotify_ad_blocker\main.pyw" /sc onlogon /rl highest /f
 
-python3 main.pyw
+python3 "C:\Program Files (x86)\Spotify_ad_blocker\Spotify_ad_blocker\main.pyw"
 
 echo Установка Python и Библиотек Успешна!!!
 echo Клонирования проекта Успешно!!!
