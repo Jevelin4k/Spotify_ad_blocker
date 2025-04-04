@@ -17,6 +17,7 @@ pip install winrt-Windows.Media.Core==3.0.0
 pip install winrt-Windows.Storage==3.0.0
 pip install winrt-Windows.Storage.Streams==3.0.0
 pip install asyncio
+pip install subprocess
 
 mkdir "C:\Program Files (x86)\Spotify_ad_blocker"
 cd "C:\Program Files (x86)\Spotify_ad_blocker"

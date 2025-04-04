@@ -2,6 +2,7 @@ import asyncio
 import os
 import time
 from winrt.windows.media.control import GlobalSystemMediaTransportControlsSessionManager as MediaManager
+import subprocess
 #імпорти бібліотек
 
 
@@ -28,7 +29,14 @@ async def get_media_info():
 def restart_app():
     #тут презапуск спотифай
     os.system('TASKKILL /F /IM Spotify.exe')
-    os.system('spotify')
+    exe_path = 'spotify'
+    si = subprocess.STARTUPINFO()
+    si.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+    process = subprocess.Popen(
+        exe_path,
+        startupinfo=si,
+        creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NEW_PROCESS_GROUP
+    )
     print('ad')
 
 async def play_media(album_title):
