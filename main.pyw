@@ -56,7 +56,7 @@ def restart_app():
         #print("Spotify не знайдено у вікнах")
 
 
-    #print('ad')
+   # print('ad')
 
 async def play_media(album_title):
     while True:
@@ -67,7 +67,7 @@ async def play_media(album_title):
             break
         except Exception:
             pass
-           # print('wait')
+            #print('wait')
 
 
     while True:
@@ -86,7 +86,7 @@ async def play_media(album_title):
 
             await current_session.try_play_async()
             await current_session.try_skip_next_async()
-           # print('Воспроизведение запущено!')
+            #print('Воспроизведение запущено!')
             break
         else:
             raise Exception(f'Программа {TARGET_ID} не является текущей медиа-сессией')
@@ -104,7 +104,7 @@ if __name__ == '__main__':
                 while True:
                     try:
                         restart_app()
-                        time.sleep(2)
+                        time.sleep(1)
                         asyncio.run(play_media(current_media_info['album_title']))
                         break
                     except Exception:
@@ -119,15 +119,15 @@ if __name__ == '__main__':
                         break
                     except Exception:
                         continue
-                                while True:
+                time.sleep(1)
 
-                    time.sleep(1)
-                    
+                while True:
                     try:
                         asyncio.run(play_media(current_media_info['album_title']))
                         break
                     except Exception:
                         continue
+
 
         except Exception as e:
             print(f'Ошибка: {e}')
