@@ -16,7 +16,8 @@ async def get_media_info():
         TARGET_ID = current_session.source_app_user_model_id
         #print(f'Активный идентификатор: {current_session.source_app_user_model_id}')
     except Exception:
-        print('Not ready')
+        pass
+        #print('Not ready')
 
     if current_session is None:
         raise Exception('Нет активной медиа-сессии')
@@ -41,7 +42,7 @@ def restart_app():
     spotify_path = os.path.expanduser("~") + "\\AppData\\Local\\Microsoft\\WindowsApps\\Spotify.exe"
 
     subprocess.Popen([spotify_path, "--minimized"], shell=True)
-    print("Spotify запущено у фоновому режимі!")
+    #print("Spotify запущено у фоновому режимі!")
 
     time.sleep(3)
 
@@ -49,12 +50,13 @@ def restart_app():
     spotify_windows = gw.getWindowsWithTitle("Spotify")
     if spotify_windows:
         spotify_windows[0].minimize()
-        print("Spotify згорнуто")
+        #print("Spotify згорнуто")
     else:
-        print("Spotify не знайдено у вікнах")
+        pass
+        #print("Spotify не знайдено у вікнах")
 
 
-    print('ad')
+    #print('ad')
 
 async def play_media(album_title):
     while True:
@@ -64,7 +66,8 @@ async def play_media(album_title):
             TARGET_ID = current_session.source_app_user_model_id
             break
         except Exception:
-            print('wait')
+            pass
+           # print('wait')
 
 
     while True:
@@ -83,7 +86,7 @@ async def play_media(album_title):
 
             await current_session.try_play_async()
             await current_session.try_skip_next_async()
-            print('Воспроизведение запущено!')
+           # print('Воспроизведение запущено!')
             break
         else:
             raise Exception(f'Программа {TARGET_ID} не является текущей медиа-сессией')
@@ -94,7 +97,7 @@ if __name__ == '__main__':
         try:
             time.sleep(1)
             current_media_info = asyncio.run(get_media_info())
-            print(current_media_info)
+            #print(current_media_info)
 
             '''if input('>>>') == 'y':
                 time.sleep(10)
