@@ -119,8 +119,15 @@ if __name__ == '__main__':
                         break
                     except Exception:
                         continue
-                time.sleep(2)
-                asyncio.run(play_media(current_media_info['album_title']))
+                                while True:
+
+                    time.sleep(1)
+                    
+                    try:
+                        asyncio.run(play_media(current_media_info['album_title']))
+                        break
+                    except Exception:
+                        continue
 
         except Exception as e:
             print(f'Ошибка: {e}')
