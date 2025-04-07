@@ -1,2 +1,4 @@
-Set WshShell = CreateObject("Shell.Application")
-WshShell.ShellExecute "cmd.exe", "/c launch.bat", "", "open", "0"
+Set WshShell = CreateObject("WScript.Shell")
+strPath = WScript.ScriptFullName
+strFolder = Left(strPath, Len(strPath) - Len(WScript.ScriptName))
+WshShell.Run Chr(34) & strFolder & "launch.bat" & Chr(34), 0, False
