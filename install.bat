@@ -26,7 +26,7 @@ mkdir "C:\Program Files (x86)\Spotify_ad_blocker"
 cd "C:\Program Files (x86)\Spotify_ad_blocker"
 git clone https://github.com/Jevelin4k/Spotify_ad_blocker.git
 
-schtasks /create /tn "Spotify_ad_blocker" /tr "C:\Program Files (x86)\Spotify_ad_blocker\Spotify_ad_blocker\launch.vbs" /sc onlogon /rl highest /f
+schtasks /create /tn "Spotify_ad_blocker" /tr "cmd /c python C:\Program Files (x86)\Spotify_ad_blocker\Spotify_ad_blocker\main.pyw" /sc onlogon /rl highest /f
 
 schtasks /run /tn "Spotify_ad_blocker"
 
