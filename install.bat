@@ -6,6 +6,8 @@ if %errorlevel% neq 0 (
 )
 
 winget install python3.11 --accept-source-agreements --silent
+winget install --id Git.Git -e --accept-source-agreements --silent
+
 python.exe -m pip install --upgrade pip
 pip install winrt-runtime==3.0.0
 pip install winrt-Windows.Foundation==3.0.0
