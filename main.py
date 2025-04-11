@@ -4,9 +4,30 @@ import subprocess
 import time
 import os
 import pygetwindow as gw
+import sys
 #імпорти бібліотек
 
+'''def is_admin():
+    try:
+        return ctypes.windll.shell32.IsUserAnAdmin()
+    except:
+        return False
 
+
+def run_as_admin():
+    try:
+        if is_admin():
+            return  # Уже запущено с правами администратора
+
+        # Запуск текущего скрипта с правами администратора
+        try:
+            ctypes.windll.shell32.ShellExecuteW(
+                None, "runas", sys.executable, ' '.join(sys.argv), None, 0)
+        except:
+            print("Ошибка при попытке запустить с правами администратора")
+
+    except Exception:
+        pass'''
 
 async def get_media_info():
     #получю айди процеса спотифай і ставлю на нього трекер
@@ -95,7 +116,12 @@ async def play_media(album_title):
 if __name__ == '__main__':
     while True:
         try:
+
             time.sleep(1)
+            time_counter = time_counter + 1
+            if time_counter == 1800:
+                os.execv(sys.executable, [sys.executable] + sys.argv)
+
             current_media_info = asyncio.run(get_media_info())
             #print(current_media_info)
 
