@@ -114,19 +114,10 @@ async def play_media(album_title):
 
 
 if __name__ == '__main__':
-    time_counter = 0
     while True:
         try:
 
             time.sleep(1)
-            time_counter = time_counter + 1
-            if time_counter == 1800:
-                time_counter = 0
-                try:
-                    os.execv(sys.executable, [sys.executable] + sys.argv)
-                except Exception:
-                        pass
-
             current_media_info = asyncio.run(get_media_info())
             #print(current_media_info)
 
