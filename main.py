@@ -4,7 +4,7 @@ import subprocess
 import time
 import os
 import pygetwindow as gw
-import sys
+import gc
 #імпорти бібліотек
 
 '''def is_admin():
@@ -62,7 +62,7 @@ def restart_app():
     os.system('TASKKILL /F /IM Spotify.exe')
     spotify_path = os.path.expanduser("~") + "\\AppData\\Local\\Microsoft\\WindowsApps\\Spotify.exe"
 
-    subprocess.Popen([spotify_path, "--minimized"], shell=True)
+    subprocess.Popen([spotify_path, "--minimized"], creationflags=subprocess.CREATE_NO_WINDOW)# ////////////////////////////////////
     #print("Spotify запущено у фоновому режимі!")
 
     time.sleep(3)
@@ -118,6 +118,8 @@ if __name__ == '__main__':
         try:
 
             time.sleep(1)
+
+
             current_media_info = asyncio.run(get_media_info())
             #print(current_media_info)
 
@@ -150,6 +152,11 @@ if __name__ == '__main__':
                     except Exception:
                         continue
 
+            current_media_info = []
+
+
 
         except Exception as e:
             print(f'Ошибка: {e}')
+
+            #утечка памяти
