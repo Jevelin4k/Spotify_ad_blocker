@@ -7,5 +7,6 @@ if %errorlevel% neq 0 (
 )
 
 schtasks /delete /tn "Spotify_ad_blocker" /f
+
 TASKKILL /F /IM pythonw.exe
 rmdir "C:\Program Files (x86)\Spotify_ad_blocker" /s /q
