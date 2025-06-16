@@ -59,7 +59,11 @@ def get_active_window_title():
 
 def restart_app():
     #тут презапуск спотифай
-    subprocess.Popen('TASKKILL /F /IM Spotify.exe', shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE, creationflags=subprocess.CREATE_NO_WINDOW)
+    subprocess.Popen('TASKKILL /F /IM Spotify.exe', stdout=subprocess.PIPE)
+
+
+    time.sleep(0.2)
+
     spotify_path = os.path.expanduser("~") + "\\AppData\\Local\\Microsoft\\WindowsApps\\Spotify.exe"
 
     subprocess.Popen([spotify_path, "--minimized"], creationflags=subprocess.CREATE_NO_WINDOW)# ////////////////////////////////////
@@ -93,7 +97,7 @@ async def play_media(album_title):
 
     while True:
         if current_session is None:
-            raise Exception('Нет активной медиа-сессии')
+            pass
 
         if current_session.source_app_user_model_id == TARGET_ID:
             info = await current_session.try_get_media_properties_async()
