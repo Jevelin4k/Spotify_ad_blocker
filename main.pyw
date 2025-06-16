@@ -41,7 +41,8 @@ async def get_media_info():
         #print('Not ready')
 
     if current_session is None:
-        raise Exception('Нет активной медиа-сессии')
+        pass
+        #raise Exception('Нет активной медиа-сессии')
 
     if current_session.source_app_user_model_id == TARGET_ID:
         info = await current_session.try_get_media_properties_async()
@@ -49,7 +50,8 @@ async def get_media_info():
         info_dict['genres'] = list(info_dict['genres'])
         return info_dict
 
-    raise Exception(f'Программа {TARGET_ID} не является текущей медиа-сессией')
+    pass
+    #raise Exception(f'Программа {TARGET_ID} не является текущей медиа-сессией')
 
 def get_active_window_title():
     active_window = gw.getActiveWindow()
@@ -114,7 +116,8 @@ async def play_media(album_title):
             #print('Воспроизведение запущено!')
             break
         else:
-            raise Exception(f'Программа {TARGET_ID} не является текущей медиа-сессией')
+            #raise Exception(f'Программа {TARGET_ID} не является текущей медиа-сессией')
+            pass
 
 
 if __name__ == '__main__':
@@ -144,7 +147,7 @@ if __name__ == '__main__':
                 while True:
                     try:
                         restart_app()
-                        print('add skiped')
+                        #print('add skiped')
                         break
                     except Exception:
                         continue
@@ -158,13 +161,12 @@ if __name__ == '__main__':
                         continue
 
 
-            print(current_media_info)
+            #print(current_media_info)
 
             current_media_info = []
 
 
 
         except Exception as e:
-            print(f'Ошибка: {e}')
-
-            #утечка памяти
+            #print(f'Ошибка: {e}')
+            pass
