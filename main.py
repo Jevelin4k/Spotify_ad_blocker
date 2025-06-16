@@ -59,7 +59,7 @@ def get_active_window_title():
 
 def restart_app():
     #тут презапуск спотифай
-    os.system('TASKKILL /F /IM Spotify.exe')
+    subprocess.Popen(['TASKKILL /F /IM Spotify.exe', "--minimized"], creationflags=subprocess.CREATE_NO_WINDOW)
     spotify_path = os.path.expanduser("~") + "\\AppData\\Local\\Microsoft\\WindowsApps\\Spotify.exe"
 
     subprocess.Popen([spotify_path, "--minimized"], creationflags=subprocess.CREATE_NO_WINDOW)# ////////////////////////////////////
