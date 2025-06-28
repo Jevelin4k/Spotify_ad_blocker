@@ -60,28 +60,32 @@ def get_active_window_title():
     return None
 
 def restart_app():
-    #тут презапуск спотифай
-    subprocess.Popen('TASKKILL /F /IM Spotify.exe', stdout=subprocess.PIPE)
-
-
-    time.sleep(0.2)
-
-    spotify_path = os.path.expanduser("~") + "\\AppData\\Local\\Microsoft\\WindowsApps\\Spotify.exe"
-
-    subprocess.Popen([spotify_path, "--minimized"], creationflags=subprocess.CREATE_NO_WINDOW)# ////////////////////////////////////
-    #print("Spotify запущено у фоновому режимі!")
-
-    time.sleep(3)
+    subprocess.Popen('TASKKILL /F /IM Spotify.exe', stdout=subprocess.PIPE, creationflags=subprocess.CREATE_NO_WINDOW)
 
     import pygetwindow as gw
-    spotify_windows = gw.getWindowsWithTitle("Spotify")
-    if spotify_windows:
-        spotify_windows[0].minimize()
-        #print("Spotify згорнуто")
-    else:
-        pass
-        #print("Spotify не знайдено у вікнах")
+    while True:
+        spotify_windows = gw.getWindowsWithTitle("Spotify")
+        if spotify_windows:
+            spotify_windows[0].minimize()
+            break
 
+        else:
+
+            spotify_path = os.path.expanduser("~") + "\\AppData\\Local\\Microsoft\\WindowsApps\\Spotify.exe"
+
+            subprocess.Popen([spotify_path, "--minimized"], creationflags=subprocess.CREATE_NO_WINDOW)# ////////////////////////////////////
+            #print("Spotify запущено у фоновому режимі!")
+
+            time.sleep(3)
+
+
+            spotify_windows = gw.getWindowsWithTitle("Spotify")
+            if spotify_windows:
+                spotify_windows[0].minimize()
+                #print("Spotify згорнуто")
+            else:
+                continue
+                #print("Spotify не знайдено у вікнах")
 
    # print('ad')
 
