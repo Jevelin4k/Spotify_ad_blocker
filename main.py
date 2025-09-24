@@ -62,9 +62,7 @@ def get_active_window_title():
 
 def restart_app():
     subprocess.Popen('TASKKILL /F /IM Spotify.exe', stdout=subprocess.PIPE, creationflags=subprocess.CREATE_NO_WINDOW)
-
-    import pygetwindow as gw
-    spotify_path = os.path.expanduser("~") + "\\AppData\\Local\\Microsoft\\WindowsApps\\Spotify.exe"
+    time.sleep(0.5)
 
     while True:
         spotify_windows = gw.getWindowsWithTitle("Spotify")
