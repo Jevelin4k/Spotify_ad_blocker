@@ -4,7 +4,8 @@ import subprocess
 import time
 import os
 import pygetwindow as gw
-import gc
+import psutil
+
 #імпорти бібліотек
 
 '''def is_admin():
@@ -63,6 +64,8 @@ def restart_app():
     subprocess.Popen('TASKKILL /F /IM Spotify.exe', stdout=subprocess.PIPE, creationflags=subprocess.CREATE_NO_WINDOW)
 
     import pygetwindow as gw
+    spotify_path = os.path.expanduser("~") + "\\AppData\\Local\\Microsoft\\WindowsApps\\Spotify.exe"
+
     while True:
         spotify_windows = gw.getWindowsWithTitle("Spotify")
         if spotify_windows:
@@ -76,12 +79,13 @@ def restart_app():
             subprocess.Popen([spotify_path, "--minimized"], creationflags=subprocess.CREATE_NO_WINDOW)# ////////////////////////////////////
             #print("Spotify запущено у фоновому режимі!")
 
-            time.sleep(3)
+            time.sleep(1)
 
 
             spotify_windows = gw.getWindowsWithTitle("Spotify")
             if spotify_windows:
                 spotify_windows[0].minimize()
+                break
                 #print("Spotify згорнуто")
             else:
                 continue
@@ -124,12 +128,11 @@ async def play_media(album_title):
             pass
 
 
-if __name__ == '__main__':
+def main():
     while True:
         try:
 
             time.sleep(1)
-
 
             current_media_info = asyncio.run(get_media_info())
             #print(current_media_info)
@@ -165,12 +168,25 @@ if __name__ == '__main__':
                         continue
 
 
-            #print(current_media_info)
-
             current_media_info = []
 
 
 
         except Exception as e:
-            #print(f'Ошибка: {e}')
+            break
+
+if __name__ == '__main__':
+    while True:
+        time.sleep(5)
+
+        try:
+            for proc in psutil.process_iter():
+                name = proc.name()
+                if name == "Spotify.exe":
+                    main()
+                    break
+                else:
+                    continue
+
+        except Exception:
             pass
