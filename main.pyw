@@ -67,16 +67,23 @@ def restart_app():
     subprocess.Popen('TASKKILL /F /IM Spotify.exe', stdout=subprocess.PIPE, creationflags=subprocess.CREATE_NO_WINDOW)
     time.sleep(0.5)
 
-    while True:
-        spotify_path = os.path.expanduser("~") + "\\AppData\\Local\\Microsoft\\WindowsApps\\Spotify.exe"
-        subprocess.Popen([spotify_path, "--minimized"],
-                         creationflags=subprocess.CREATE_NO_WINDOW)  # ////////////////////////////////////
-        time.sleep(1)
 
+    spotify_path = os.path.expanduser("~") + "\\AppData\\Local\\Microsoft\\WindowsApps\\Spotify.exe"
+    subprocess.Popen([spotify_path, "--minimized"],
+                     creationflags=subprocess.CREATE_NO_WINDOW)  # ////////////////////////////////////
+    time.sleep(1)
+
+    while True:
         spotify_windows = gw.getWindowsWithTitle("Spotify")
         if spotify_windows:
             spotify_windows[0].minimize()
             break
+        else:
+            spotify_path = os.path.expanduser("~") + "\\AppData\\Local\\Microsoft\\WindowsApps\\Spotify.exe"
+            subprocess.Popen([spotify_path, "--minimized"],
+                             creationflags=subprocess.CREATE_NO_WINDOW)
+            continue
+
 
 
 # print('ad')
