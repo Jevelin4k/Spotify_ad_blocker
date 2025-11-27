@@ -5,11 +5,11 @@ import time
 import os
 import pygetwindow as gw
 import psutil
+import ctypes
 
+# імпорти бібліотек
 
-#імпорти бібліотек
-
-'''def is_admin():
+def is_admin():
     try:
         return ctypes.windll.shell32.IsUserAnAdmin()
     except:
@@ -29,22 +29,23 @@ def run_as_admin():
             print("Ошибка при попытке запустить с правами администратора")
 
     except Exception:
-        pass'''
+        pass
+
 
 async def get_media_info():
-    #получю айди процеса спотифай і ставлю на нього трекер
+    # получю айди процеса спотифай і ставлю на нього трекер
     try:
         sessions = await MediaManager.request_async()
         current_session = sessions.get_current_session()
         TARGET_ID = current_session.source_app_user_model_id
-        #print(f'Активный идентификатор: {current_session.source_app_user_model_id}')
+        # print(f'Активный идентификатор: {current_session.source_app_user_model_id}')
     except Exception:
         pass
-        #print('Not ready')
+        # print('Not ready')
 
     if current_session is None:
         pass
-        #raise Exception('Нет активной медиа-сессии')
+        # raise Exception('Нет активной медиа-сессии')
 
     if current_session.source_app_user_model_id == TARGET_ID:
         info = await current_session.try_get_media_properties_async()
@@ -53,7 +54,8 @@ async def get_media_info():
         return info_dict
 
     pass
-    #raise Exception(f'Программа {TARGET_ID} не является текущей медиа-сессией')
+    # raise Exception(f'Программа {TARGET_ID} не является текущей медиа-сессией')
+
 
 def get_active_window_title():
     active_window = gw.getActiveWindow()
@@ -61,12 +63,20 @@ def get_active_window_title():
         return active_window.title
     return None
 
+
 def restart_app():
     subprocess.Popen('TASKKILL /F /IM Spotify.exe', stdout=subprocess.PIPE, creationflags=subprocess.CREATE_NO_WINDOW)
 
     spotify_path = os.path.expanduser("~") + "\\AppData\\Local\\Microsoft\\WindowsApps\\Spotify.exe"
+    subprocess.Popen(
+        [spotify_path, "--minimized", "--quiet"],
+        creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NO_WINDOW | subprocess.CREATE_BREAKAWAY_FROM_JOB
+    )
 
-    while True:
+    x = 0
+
+    while x <= 10:
+        x = +1
         spotify_windows = gw.getWindowsWithTitle("Spotify")
         if spotify_windows:
             spotify_windows[0].minimize()
@@ -75,23 +85,21 @@ def restart_app():
         else:
 
             spotify_path = os.path.expanduser("~") + "\\AppData\\Local\\Microsoft\\WindowsApps\\Spotify.exe"
-
-            subprocess.Popen([spotify_path, "--minimized"], creationflags=subprocess.CREATE_NO_WINDOW)# ////////////////////////////////////
-            #print("Spotify запущено у фоновому режимі!")
+            subprocess.Popen([spotify_path, "--minimized"], creationflags=subprocess.CREATE_NO_WINDOW)
 
             time.sleep(3)
-
 
             spotify_windows = gw.getWindowsWithTitle("Spotify")
             if spotify_windows:
                 spotify_windows[0].minimize()
                 break
-                #print("Spotify згорнуто")
+                # print("Spotify згорнуто")
             else:
                 continue
-                #print("Spotify не знайдено у вікнах")
+                # print("Spotify не знайдено у вікнах")
 
-   # print('ad')
+
+# print('ad')
 
 async def play_media(album_title):
     while True:
@@ -102,8 +110,7 @@ async def play_media(album_title):
             break
         except Exception:
             pass
-            #print('wait')
-
+            # print('wait')
 
     while True:
         if current_session is None:
@@ -121,10 +128,10 @@ async def play_media(album_title):
 
             await current_session.try_play_async()
             await current_session.try_skip_next_async()
-            #print('Воспроизведение запущено!')
+            # print('Воспроизведение запущено!')
             break
         else:
-            #raise Exception(f'Программа {TARGET_ID} не является текущей медиа-сессией')
+            # raise Exception(f'Программа {TARGET_ID} не является текущей медиа-сессией')
             pass
 
 
@@ -184,6 +191,7 @@ if __name__ == '__main__':
                 name = proc.name()
                 if name == "Spotify.exe":
                     main()
+                    name = None
                     break
                 else:
                     continue
