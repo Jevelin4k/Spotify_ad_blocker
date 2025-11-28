@@ -6,6 +6,7 @@ import os
 import pygetwindow as gw
 import psutil
 import ctypes
+import sys
 
 # імпорти бібліотек
 
@@ -85,7 +86,10 @@ def restart_app():
         else:
 
             spotify_path = os.path.expanduser("~") + "\\AppData\\Local\\Microsoft\\WindowsApps\\Spotify.exe"
-            subprocess.Popen([spotify_path, "--minimized"], creationflags=subprocess.CREATE_NO_WINDOW)
+            subprocess.Popen(
+                [spotify_path, "--minimized", "--quiet"],
+                creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NO_WINDOW | subprocess.CREATE_BREAKAWAY_FROM_JOB
+            )
 
             time.sleep(3)
 
