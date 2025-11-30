@@ -79,7 +79,7 @@ def restart_app():
     #print('pass')
     spotify_path = os.path.expanduser("~") + "\\AppData\\Local\\Microsoft\\WindowsApps\\Spotify.exe"
 
-    time.sleep(1.5)
+    time.sleep(3)
     subprocess.Popen([spotify_path, "--minimized"], creationflags=subprocess.CREATE_NO_WINDOW)
 
     #print('pass')
@@ -98,7 +98,7 @@ def restart_app():
             subprocess.Popen([spotify_path, "--minimized"], creationflags=subprocess.CREATE_NO_WINDOW)  # ////////////////////////////////////
 
 
-            time.sleep(3)
+            time.sleep(1)
 
             spotify_windows = gw.getWindowsWithTitle("Spotify")
             if spotify_windows:
@@ -207,13 +207,24 @@ if __name__ == '__main__':
                 else:
                     continue'''
 
+            try:
+                spotify_windows = gw.getWindowsWithTitle("Spotify")
+                if spotify_windows:
+                    main()
 
-            spotify_windows = gw.getWindowsWithTitle("Spotify")
+            except Exception:
+                current_media_info = asyncio.run(get_media_info())
+                titeles = asyncio.run(current_media_info['album_title'])
+                print(titeles)
+                spotify_windows = gw.getWindowsWithTitle(titeles)
 
 
-            if spotify_windows:
-                main()
+                if spotify_windows:
+                    main()
 
+                current_media_info = None
+                titeles = None
+                spotify_windows = None
 
 
         except Exception:
