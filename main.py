@@ -64,15 +64,25 @@ def get_active_window_title():
         return active_window.title
     return None
 
+def kill():
+    result = subprocess.Popen('TASKKILL /F /IM Spotify.exe', stdout=subprocess.PIPE, creationflags=subprocess.CREATE_NO_WINDOW)
+    #print(result)
 
 def restart_app():
-    subprocess.Popen('TASKKILL /F /IM Spotify.exe', stdout=subprocess.PIPE, creationflags=subprocess.CREATE_NO_WINDOW)
+    try:
+        kill()
+    except Exception:
+        #print(e)
+        pass
 
+
+    #print('pass')
     spotify_path = os.path.expanduser("~") + "\\AppData\\Local\\Microsoft\\WindowsApps\\Spotify.exe"
-    subprocess.Popen(
-        [spotify_path, "--minimized", "--quiet"],
-        creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NO_WINDOW | subprocess.CREATE_BREAKAWAY_FROM_JOB
-    )
+
+    time.sleep(1.5)
+    subprocess.Popen([spotify_path, "--minimized"], creationflags=subprocess.CREATE_NO_WINDOW)
+
+    #print('pass')
 
     x = 0
 
@@ -81,26 +91,23 @@ def restart_app():
         spotify_windows = gw.getWindowsWithTitle("Spotify")
         if spotify_windows:
             spotify_windows[0].minimize()
+            spotify_windows = None
             break
 
         else:
+            subprocess.Popen([spotify_path, "--minimized"], creationflags=subprocess.CREATE_NO_WINDOW)  # ////////////////////////////////////
 
-            spotify_path = os.path.expanduser("~") + "\\AppData\\Local\\Microsoft\\WindowsApps\\Spotify.exe"
-            subprocess.Popen(
-                [spotify_path, "--minimized", "--quiet"],
-                creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NO_WINDOW | subprocess.CREATE_BREAKAWAY_FROM_JOB
-            )
 
             time.sleep(3)
 
             spotify_windows = gw.getWindowsWithTitle("Spotify")
             if spotify_windows:
                 spotify_windows[0].minimize()
+                spotify_windows = None
                 break
-                # print("Spotify згорнуто")
             else:
                 continue
-                # print("Spotify не знайдено у вікнах")
+
 
 
 # print('ad')
@@ -157,6 +164,7 @@ def main():
                         asyncio.run(play_media(current_media_info['album_title']))
                         break
                     except Exception:
+                        print(Exception)
                         continue
             else:
                 exit()'''
@@ -178,7 +186,7 @@ def main():
                     except Exception:
                         continue
 
-            current_media_info = []
+            current_media_info = None
 
 
 
@@ -191,14 +199,22 @@ if __name__ == '__main__':
         time.sleep(15)
 
         try:
-            for proc in psutil.process_iter():
+            '''for proc in psutil.process_iter():
                 name = proc.name()
                 if name == "Spotify.exe":
                     main()
-                    name = None
                     break
                 else:
-                    continue
+                    continue'''
+
+
+            spotify_windows = gw.getWindowsWithTitle("Spotify")
+
+
+            if spotify_windows:
+                main()
+
+
 
         except Exception:
             pass
