@@ -8,6 +8,9 @@ import psutil
 import ctypes
 import sys
 
+
+
+
 # імпорти бібліотек
 
 def is_admin():
@@ -68,6 +71,22 @@ def kill():
     result = subprocess.Popen('TASKKILL /F /IM Spotify.exe', stdout=subprocess.PIPE, creationflags=subprocess.CREATE_NO_WINDOW)
     #print(result)
 
+def check_for_proc():
+    ls = []
+    name_ = None
+    for proc in psutil.process_iter():
+        name = proc.name()
+        if name == "Spotify.exe":
+            name_ = name
+            return True
+        else:
+            ls.append(name)
+            continue
+
+    if name_ not in ls:
+        return False
+
+
 def restart_app():
     try:
         kill()
@@ -76,18 +95,20 @@ def restart_app():
         pass
 
 
-    #print('pass')
     spotify_path = os.path.expanduser("~") + "\\AppData\\Local\\Microsoft\\WindowsApps\\Spotify.exe"
 
-    time.sleep(3)
-    subprocess.Popen([spotify_path, "--minimized"], creationflags=subprocess.CREATE_NO_WINDOW)
+    while True:
+        if check_for_proc() is False:
+            subprocess.Popen(
+                [spotify_path, "--minimized"],
+                creationflags=subprocess.CREATE_NO_WINDOW | subprocess.SW_HIDE
+            )
+        elif check_for_proc() is True:
+            continue
 
-    #print('pass')
 
-    x = 0
 
-    while x <= 10:
-        x = +1
+    for _ in range(11):
         spotify_windows = gw.getWindowsWithTitle("Spotify")
         if spotify_windows:
             spotify_windows[0].minimize()
@@ -132,7 +153,7 @@ async def play_media(album_title):
             info_dict = {song_attr: info.__getattribute__(song_attr) for song_attr in dir(info) if
                          song_attr[0] != '_'}
             info_dict['genres'] = list(info_dict['genres'])
-            album_title = info_dict['album_title']
+            album_title = info_dict['title']
 
             if album_title == '':
                 continue
@@ -181,7 +202,7 @@ def main():
 
                 while True:
                     try:
-                        asyncio.run(play_media(current_media_info['album_title']))
+                        asyncio.run(play_media(current_media_info['title']))
                         break
                     except Exception:
                         continue
@@ -195,6 +216,7 @@ def main():
 
 
 if __name__ == '__main__':
+
     while True:
         time.sleep(15)
 
@@ -211,20 +233,23 @@ if __name__ == '__main__':
                 spotify_windows = gw.getWindowsWithTitle("Spotify")
                 if spotify_windows:
                     main()
-
-            except Exception:
-                current_media_info = asyncio.run(get_media_info())
-                titeles = asyncio.run(current_media_info['album_title'])
-                print(titeles)
-                spotify_windows = gw.getWindowsWithTitle(titeles)
-
-
-                if spotify_windows:
-                    main()
+                else:
+                    current_media_info = asyncio.run(get_media_info())
+                    author = asyncio.run(current_media_info['artist'])
+                    titeles = asyncio.run(current_media_info['title'])
+                    #print(author, titeles)
+                    spotify_windows = gw.getWindowsWithTitle(f'{author} - {titeles}')
+                    if spotify_windows:
+                        main()
+                    else:
+                        continue
 
                 current_media_info = None
                 titeles = None
                 spotify_windows = None
+
+            except Exception:
+                continue
 
 
         except Exception:
