@@ -233,22 +233,12 @@ if __name__ == '__main__':
                 spotify_windows = gw.getWindowsWithTitle("Spotify")
                 if spotify_windows:
                     main()
-                else:
-                    current_media_info = asyncio.run(get_media_info())
-                    author = asyncio.run(current_media_info['artist'])
-                    titeles = asyncio.run(current_media_info['title'])
-                    #print(author, titeles)
-                    spotify_windows = gw.getWindowsWithTitle(f'{author} - {titeles}')
-                    if spotify_windows:
-                        main()
-                    else:
-                        continue
 
                 current_media_info = None
-                titeles = None
                 spotify_windows = None
 
             except Exception:
+                spotify_windows = None
                 continue
 
 
