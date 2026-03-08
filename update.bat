@@ -30,6 +30,7 @@ pip install pywin32
 pip install pygetwindow
 pip install sys
 pip install psutil
+pip install pywinctl pywin32 psutil
 
 
 mkdir "C:\Program Files (x86)\Spotify_ad_blocker"
@@ -40,5 +41,6 @@ schtasks /create /tn "Spotify_ad_blocker" /tr "\"C:\Windows\System32\wscript.exe
 
 
 schtasks /run /tn "Spotify_ad_blocker"
+
 
 pause
