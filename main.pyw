@@ -90,6 +90,49 @@ def check_for_proc():
     if name_ not in ls:
         return False
 
+def find_spotify_window():
+
+    def enum_windows_callback(hwnd, windows):
+        if win32gui.IsWindowVisible(hwnd):
+            window_text = win32gui.GetWindowText(hwnd)
+            if "Spotify" in window_text:
+                windows.append(hwnd)
+        return True
+
+    windows = []
+    win32gui.EnumWindows(enum_windows_callback, windows)
+    return windows[0] if windows else None
+
+def hide_spotify():
+    hwnd = find_spotify_window()
+    if hwnd:
+        # Скрываем окно (SW_HIDE = 0) [citation:5]
+        win32gui.ShowWindow(hwnd, win32con.SW_HIDE)
+        #print("Spotify скрыт")
+    else:
+        #print("Spotify не найден")
+        for _ in range(10):
+            time.sleep(0.1)
+            hwnd = find_spotify_window()
+            if hwnd:
+                # Скрываем окно (SW_HIDE = 0) [citation:5]
+                win32gui.ShowWindow(hwnd, win32con.SW_HIDE)
+                #print("Spotify скрыт")
+
+                if hwnd:
+                    # Показываем окно (SW_SHOW = 5)
+                    win32gui.ShowWindow(hwnd, win32con.SW_SHOW)
+
+                    spotify_windows = gw.getWindowsWithTitle("Spotify")
+                    if spotify_windows:
+                        spotify_windows[0].minimize()
+                        spotify_windows = None
+                    #print("Spotify показан")
+                    break
+                else:
+                    #print("Spotify не найден")
+                    continue
+
 
 def restart_app():
     try:
@@ -106,60 +149,13 @@ def restart_app():
         [spotify_path, "--minimized", "--quiet"],
         creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NO_WINDOW | subprocess.CREATE_BREAKAWAY_FROM_JOB | subprocess.SW_HIDE
     )
+    hide_spotify()
 
-    spotify_windows = gw.getWindowsWithTitle("Spotify")
+    '''spotify_windows = gw.getWindowsWithTitle("Spotify")
     if spotify_windows:
         spotify_windows[0].minimize()
-        subprocess.Popen(
-            [spotify_path, "--minimized", "--quiet"],
-            creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NO_WINDOW | subprocess.CREATE_BREAKAWAY_FROM_JOB | subprocess.SW_HIDE
-        )
-        spotify_windows = None
+        spotify_windows = None'''
 
-    def find_spotify_window():
-
-        def enum_windows_callback(hwnd, windows):
-            if win32gui.IsWindowVisible(hwnd):
-                window_text = win32gui.GetWindowText(hwnd)
-                if "Spotify" in window_text:
-                    windows.append(hwnd)
-            return True
-
-        windows = []
-        win32gui.EnumWindows(enum_windows_callback, windows)
-        return windows[0] if windows else None
-
-    def hide_spotify():
-        hwnd = find_spotify_window()
-        if hwnd:
-            # Скрываем окно (SW_HIDE = 0) [citation:5]
-            win32gui.ShowWindow(hwnd, win32con.SW_HIDE)
-            #print("Spotify скрыт")
-        else:
-            #print("Spotify не найден")
-            for _ in range(10):
-                time.sleep(0.1)
-                hwnd = find_spotify_window()
-                if hwnd:
-                    # Скрываем окно (SW_HIDE = 0) [citation:5]
-                    win32gui.ShowWindow(hwnd, win32con.SW_HIDE)
-                    #print("Spotify скрыт")
-
-                    if hwnd:
-                        # Показываем окно (SW_SHOW = 5)
-                        win32gui.ShowWindow(hwnd, win32con.SW_SHOW)
-
-                        spotify_windows = gw.getWindowsWithTitle("Spotify")
-                        if spotify_windows:
-                            spotify_windows[0].minimize()
-                            spotify_windows = None
-                        #print("Spotify показан")
-                        break
-                    else:
-                        #print("Spotify не найден")
-                        continue
-
-    hide_spotify()
 
 async def play_media(album_title):
     while True:
@@ -202,7 +198,7 @@ def main():
             time.sleep(1)
 
             current_media_info = asyncio.run(get_media_info())
-            #print(current_media_info)
+            print(current_media_info)
             # print(current_media_info)
 
             '''if input('>>>') == 'y':
@@ -237,7 +233,7 @@ def main():
                 time.sleep(1)
 
 
-            elif (current_media_info['artist'] == 'Spotify') and (current_media_info['album_title'] == ''):
+            elif (current_media_info['artist'] == 'Spotify') and (current_media_info['album_title'] == '') or (current_media_info['album_title'] == '') and (current_media_info['track_number'] == '0'):
                 print(current_media_info)
                 while True:
                     try:
