@@ -30,6 +30,9 @@ pip install pywin32
 pip install pygetwindow
 pip install sys
 pip install psutil
+pip install ctypes
+pip install win32gui
+pip install win32con
 pip install pywinctl pywin32 psutil
 
 
@@ -44,3 +47,4 @@ schtasks /run /tn "Spotify_ad_blocker"
 
 
 pause
+
