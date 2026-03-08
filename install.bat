@@ -22,6 +22,9 @@ pip install pywin32
 pip install pygetwindow
 pip install sys
 pip install psutil
+pip install ctypes
+pip install win32gui
+pip install win32con
 
 
 mkdir "C:\Program Files (x86)\Spotify_ad_blocker"

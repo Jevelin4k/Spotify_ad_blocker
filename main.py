@@ -7,8 +7,9 @@ import pygetwindow as gw
 import psutil
 import ctypes
 import sys
-
-
+import win32gui
+import win32con
+import time
 
 
 # імпорти бібліотек
@@ -67,9 +68,12 @@ def get_active_window_title():
         return active_window.title
     return None
 
+
 def kill():
-    result = subprocess.Popen('TASKKILL /F /IM Spotify.exe', stdout=subprocess.PIPE, creationflags=subprocess.CREATE_NO_WINDOW)
-    #print(result)
+    result = subprocess.Popen('TASKKILL /F /IM Spotify.exe', stdout=subprocess.PIPE,
+                              creationflags=subprocess.CREATE_NO_WINDOW)
+    print(result)
+
 
 def check_for_proc():
     ls = []
@@ -90,48 +94,72 @@ def check_for_proc():
 def restart_app():
     try:
         kill()
-    except Exception:
-        #print(e)
+    except Exception as e:
+        print(e)
         pass
-
 
     spotify_path = os.path.expanduser("~") + "\\AppData\\Local\\Microsoft\\WindowsApps\\Spotify.exe"
 
-    while True:
-        if check_for_proc() is False:
-            subprocess.Popen(
-                [spotify_path, "--minimized"],
-                creationflags=subprocess.CREATE_NO_WINDOW | subprocess.SW_HIDE
-            )
-        elif check_for_proc() is True:
-            continue
+    time.sleep(1)
 
+    subprocess.Popen(
+        [spotify_path, "--minimized", "--quiet"],
+        creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NO_WINDOW | subprocess.CREATE_BREAKAWAY_FROM_JOB | subprocess.SW_HIDE
+    )
 
+    spotify_windows = gw.getWindowsWithTitle("Spotify")
+    if spotify_windows:
+        spotify_windows[0].minimize()
+        subprocess.Popen(
+            [spotify_path, "--minimized", "--quiet"],
+            creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NO_WINDOW | subprocess.CREATE_BREAKAWAY_FROM_JOB | subprocess.SW_HIDE
+        )
+        spotify_windows = None
 
-    for _ in range(11):
-        spotify_windows = gw.getWindowsWithTitle("Spotify")
-        if spotify_windows:
-            spotify_windows[0].minimize()
-            spotify_windows = None
-            break
+    def find_spotify_window():
 
+        def enum_windows_callback(hwnd, windows):
+            if win32gui.IsWindowVisible(hwnd):
+                window_text = win32gui.GetWindowText(hwnd)
+                if "Spotify" in window_text:
+                    windows.append(hwnd)
+            return True
+
+        windows = []
+        win32gui.EnumWindows(enum_windows_callback, windows)
+        return windows[0] if windows else None
+
+    def hide_spotify():
+        hwnd = find_spotify_window()
+        if hwnd:
+            # Скрываем окно (SW_HIDE = 0) [citation:5]
+            win32gui.ShowWindow(hwnd, win32con.SW_HIDE)
+            #print("Spotify скрыт")
         else:
-            subprocess.Popen([spotify_path, "--minimized"], creationflags=subprocess.CREATE_NO_WINDOW)  # ////////////////////////////////////
+            #print("Spotify не найден")
+            for _ in range(10):
+                time.sleep(0.1)
+                hwnd = find_spotify_window()
+                if hwnd:
+                    # Скрываем окно (SW_HIDE = 0) [citation:5]
+                    win32gui.ShowWindow(hwnd, win32con.SW_HIDE)
+                    #print("Spotify скрыт")
 
+                    if hwnd:
+                        # Показываем окно (SW_SHOW = 5)
+                        win32gui.ShowWindow(hwnd, win32con.SW_SHOW)
 
-            time.sleep(1)
+                        spotify_windows = gw.getWindowsWithTitle("Spotify")
+                        if spotify_windows:
+                            spotify_windows[0].minimize()
+                            spotify_windows = None
+                        #print("Spotify показан")
+                        break
+                    else:
+                        #print("Spotify не найден")
+                        continue
 
-            spotify_windows = gw.getWindowsWithTitle("Spotify")
-            if spotify_windows:
-                spotify_windows[0].minimize()
-                spotify_windows = None
-                break
-            else:
-                continue
-
-
-
-# print('ad')
+    hide_spotify()
 
 async def play_media(album_title):
     while True:
@@ -174,6 +202,7 @@ def main():
             time.sleep(1)
 
             current_media_info = asyncio.run(get_media_info())
+            #print(current_media_info)
             # print(current_media_info)
 
             '''if input('>>>') == 'y':
@@ -190,26 +219,42 @@ def main():
             else:
                 exit()'''
 
-            if current_media_info['title'] == 'Advertisement':
+            if current_media_info['title'] == "Advertisement":
+                print(current_media_info)
                 while True:
                     try:
                         restart_app()
                         # print('add skiped')
+                        while True:
+                            try:
+                                asyncio.run(play_media(current_media_info['title']))
+                                break
+                            except Exception:
+                                continue
                         break
                     except Exception:
                         continue
                 time.sleep(1)
 
+
+            elif (current_media_info['artist'] == 'Spotify') and (current_media_info['album_title'] == ''):
+                print(current_media_info)
                 while True:
                     try:
-                        asyncio.run(play_media(current_media_info['title']))
+                        restart_app()
+                        # print('add skiped')
+                        while True:
+                            try:
+                                asyncio.run(play_media(current_media_info['title']))
+                                break
+                            except Exception:
+                                continue
                         break
                     except Exception:
                         continue
+                time.sleep(1)
 
             current_media_info = None
-
-
 
         except Exception as e:
             break
@@ -218,28 +263,34 @@ def main():
 if __name__ == '__main__':
 
     while True:
-        time.sleep(15)
+        time.sleep(1)
 
         try:
-            '''for proc in psutil.process_iter():
+            for proc in psutil.process_iter():
                 name = proc.name()
                 if name == "Spotify.exe":
-                    main()
-                    break
-                else:
-                    continue'''
+                    try:
+                        main()
+                        current_media_info = None
+                        spotify_windows = None
+                        name = None
+                        proc = None
 
-            try:
+                    except Exception as e:
+                        print(e)
+                        current_media_info = None
+                        spotify_windows = None
+                    break
+
+                else:
+                    continue
+
+            '''try:
                 spotify_windows = gw.getWindowsWithTitle("Spotify")
                 if spotify_windows:
-                    main()
+                    print('1')
+                    main()'''
 
-                current_media_info = None
-                spotify_windows = None
-
-            except Exception:
-                spotify_windows = None
-                continue
 
 
         except Exception:
