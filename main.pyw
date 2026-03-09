@@ -220,14 +220,10 @@ def main():
                 #print(current_media_info)
                 while True:
                     try:
-                        restart_app()
+                        x = restart_app()
                         # print('add skiped')
-                        while True:
-                            try:
-                                asyncio.run(play_media(current_media_info['title']))
-                                break
-                            except Exception:
-                                continue
+                        if x:
+                            asyncio.run(play_media(current_media_info['title']))
                         break
                     except Exception:
                         continue
