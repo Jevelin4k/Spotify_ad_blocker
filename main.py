@@ -150,6 +150,7 @@ def restart_app():
         creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NO_WINDOW | subprocess.CREATE_BREAKAWAY_FROM_JOB | subprocess.SW_HIDE
     )
     hide_spotify()
+    return True
 
     '''spotify_windows = gw.getWindowsWithTitle("Spotify")
     if spotify_windows:
@@ -237,14 +238,15 @@ def main():
                 print(current_media_info)
                 while True:
                     try:
-                        restart_app()
+                        res = restart_app()
                         # print('add skiped')
-                        while True:
-                            try:
-                                asyncio.run(play_media(current_media_info['title']))
-                                break
-                            except Exception:
-                                continue
+                        if res is True:
+                            while True:
+                                try:
+                                    asyncio.run(play_media(current_media_info['title']))
+                                    break
+                                except Exception:
+                                    continue
                         break
                     except Exception:
                         continue
