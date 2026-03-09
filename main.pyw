@@ -199,7 +199,7 @@ def main():
             time.sleep(1)
 
             current_media_info = asyncio.run(get_media_info())
-            print(current_media_info)
+            #print(current_media_info)
             # print(current_media_info)
 
             '''if input('>>>') == 'y':
@@ -217,7 +217,7 @@ def main():
                 exit()'''
 
             if current_media_info['title'] == "Advertisement":
-                print(current_media_info)
+                #print(current_media_info)
                 while True:
                     try:
                         restart_app()
@@ -234,8 +234,8 @@ def main():
                 time.sleep(1)
 
 
-            elif (current_media_info['artist'] == 'Spotify') and (current_media_info['album_title'] == '') or (current_media_info['album_title'] == '') and (current_media_info['track_number'] == '0'):
-                print(current_media_info)
+            elif (current_media_info['artist'] == 'Spotify') and (current_media_info['album_title'] == '') or (current_media_info['album_title'] == '') and (current_media_info['track_number'] == 0):
+                #print(current_media_info)
                 while True:
                     try:
                         res = restart_app()
