@@ -1,7 +1,6 @@
 import asyncio
 from winrt.windows.media.control import GlobalSystemMediaTransportControlsSessionManager as MediaManager
 import subprocess
-import time
 import os
 import pygetwindow as gw
 import psutil
@@ -10,7 +9,6 @@ import sys
 import win32gui
 import win32con
 import time
-
 
 # імпорти бібліотек
 
@@ -139,7 +137,7 @@ def restart_app():
         kill()
     except Exception as e:
         print(e)
-        pass
+        return False
 
     spotify_path = os.path.expanduser("~") + "\\AppData\\Local\\Microsoft\\WindowsApps\\Spotify.exe"
 
@@ -150,6 +148,7 @@ def restart_app():
         creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NO_WINDOW | subprocess.CREATE_BREAKAWAY_FROM_JOB | subprocess.SW_HIDE
     )
     hide_spotify()
+    print('1')
     return True
 
     '''spotify_windows = gw.getWindowsWithTitle("Spotify")
@@ -223,6 +222,7 @@ def main():
                         x = restart_app()
                         # print('add skiped')
                         if x:
+                            time.sleep(1)
                             asyncio.run(play_media(current_media_info['title']))
                         break
                     except Exception:
@@ -230,7 +230,7 @@ def main():
                 time.sleep(1)
 
 
-            elif (current_media_info['artist'] == 'Spotify') and (current_media_info['album_title'] == '') or (current_media_info['album_title'] == '') and (current_media_info['track_number'] == 0):
+            elif (current_media_info['artist'] == 'Spotify') and (current_media_info['album_title'] == ''):
                 #print(current_media_info)
                 while True:
                     try:
@@ -248,7 +248,12 @@ def main():
                         continue
                 time.sleep(1)
 
+            elif (current_media_info['thumbnail'] is None) and (current_media_info['track_number'] == 0):
+                print('pass')
+
+
             current_media_info = None
+
 
         except Exception as e:
             break
