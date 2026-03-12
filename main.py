@@ -262,7 +262,6 @@ def main():
 
 
 if __name__ == '__main__':
-
     while True:
         time.sleep(1)
 
@@ -271,7 +270,9 @@ if __name__ == '__main__':
                 name = proc.name()
                 if name == "Spotify.exe":
                     try:
-                        main()
+                        main_proc = main
+
+                        main_proc()
                         current_media_info = None
                         spotify_windows = None
                         name = None
