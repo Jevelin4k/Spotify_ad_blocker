@@ -198,7 +198,7 @@ def main():
             time.sleep(1)
 
             current_media_info = asyncio.run(get_media_info())
-            #print(current_media_info)
+            #print(f'{current_media_info}\n')
             # print(current_media_info)
 
             '''if input('>>>') == 'y':
@@ -222,8 +222,10 @@ def main():
                         x = restart_app()
                         # print('add skiped')
                         if x:
-                            time.sleep(1)
-                            asyncio.run(play_media(current_media_info['title']))
+                            spotify_windows = gw.getWindowsWithTitle("Spotify")
+                            if spotify_windows:
+                                asyncio.run(play_media(current_media_info['title']))
+                                spotify_windows = None
                         break
                     except Exception:
                         continue
