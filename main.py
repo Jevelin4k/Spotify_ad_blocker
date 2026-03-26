@@ -29,7 +29,8 @@ def run_as_admin():
             ctypes.windll.shell32.ShellExecuteW(
                 None, "runas", sys.executable, ' '.join(sys.argv), None, 0)
         except:
-            print("Ошибка при попытке запустить с правами администратора")
+            #print("Ошибка при попытке запустить с правами администратора")
+            pass
 
     except Exception:
         pass
@@ -70,7 +71,7 @@ def get_active_window_title():
 def kill():
     result = subprocess.Popen('TASKKILL /F /IM Spotify.exe', stdout=subprocess.PIPE,
                               creationflags=subprocess.CREATE_NO_WINDOW)
-    print(result)
+    #print(result)
 
 
 def check_for_proc():
@@ -136,7 +137,8 @@ def restart_app():
     try:
         kill()
     except Exception as e:
-        print(e)
+        #print(e)
+        pass
         return False
 
     spotify_path = os.path.expanduser("~") + "\\AppData\\Local\\Microsoft\\WindowsApps\\Spotify.exe"
@@ -148,7 +150,6 @@ def restart_app():
         creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NO_WINDOW | subprocess.CREATE_BREAKAWAY_FROM_JOB | subprocess.SW_HIDE
     )
     hide_spotify()
-    print('1')
     return True
 
     '''spotify_windows = gw.getWindowsWithTitle("Spotify")
@@ -190,9 +191,24 @@ async def play_media(album_title):
             # raise Exception(f'Программа {TARGET_ID} не является текущей медиа-сессией')
             pass
 
+restart_time = 0
 
 def main():
     while True:
+        global restart_time
+        restart_time += 1
+
+
+        if restart_time == 1800: #1800
+
+            restart_path = 'restart.bat'
+
+            subprocess.Popen(
+                [restart_path, "--minimized", "--quiet"],
+                creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NO_WINDOW | subprocess.CREATE_BREAKAWAY_FROM_JOB | subprocess.SW_HIDE
+            )
+
+
         try:
 
             time.sleep(1)
@@ -251,7 +267,11 @@ def main():
                 time.sleep(1)
 
             elif (current_media_info['thumbnail'] is None) and (current_media_info['track_number'] == 0):
-                print('pass')
+                #print('pass')
+                pass
+
+            else:
+                pass
 
 
             current_media_info = None
@@ -279,7 +299,7 @@ if __name__ == '__main__':
                         proc = None
 
                     except Exception as e:
-                        print(e)
+                        #print(e)
                         current_media_info = None
                         spotify_windows = None
                     break
