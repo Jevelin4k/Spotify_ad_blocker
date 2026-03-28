@@ -2,4 +2,4 @@
 
 TASKKILL /F /IM pythonw.exe
 
-launch.vbs
+schtasks /run /tn "Spotify_ad_blocker"
