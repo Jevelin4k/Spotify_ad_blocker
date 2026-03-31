@@ -172,6 +172,8 @@ async def play_media(album_title):
     while True:
         if current_session is None:
             pass
+        elif last_two != current_session:
+            time.sleep(1.5)
 
         if current_session.source_app_user_model_id == TARGET_ID:
             info = await current_session.try_get_media_properties_async()
@@ -191,10 +193,11 @@ async def play_media(album_title):
             # raise Exception(f'Программа {TARGET_ID} не является текущей медиа-сессией')
             pass
 
+
+
+''' 
 restart_time = 0
 
-def main():
-    while True:
         global restart_time
         restart_time += 1
 
@@ -206,15 +209,25 @@ def main():
             subprocess.Popen(
                 [restart_path, "--minimized", "--quiet"],
                 creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NO_WINDOW | subprocess.CREATE_BREAKAWAY_FROM_JOB | subprocess.SW_HIDE
-            )
+            )'''
 
+last_two = []
 
+def main():
+    while True:
         try:
 
             time.sleep(1)
 
             current_media_info = asyncio.run(get_media_info())
-            #print(f'{current_media_info}\n')
+            if len(last_two) == 2:
+                last_two.pop(0)
+                last_two.append(current_media_info)
+            else:
+                last_two.append(current_media_info)
+
+            #print(f'+{current_media_info}\n')
+            #print(last_two)
             # print(current_media_info)
 
             '''if input('>>>') == 'y':
@@ -250,25 +263,15 @@ def main():
 
             elif (current_media_info['artist'] == 'Spotify') and (current_media_info['album_title'] == ''):
                 #print(current_media_info)
-                while True:
-                    try:
-                        res = restart_app()
-                        # print('add skiped')
-                        if res is True:
-                            while True:
-                                try:
-                                    asyncio.run(play_media(current_media_info['title']))
-                                    break
-                                except Exception:
-                                    continue
-                        break
-                    except Exception:
-                        continue
-                time.sleep(1)
+                add_spot()
+
 
             elif (current_media_info['thumbnail'] is None) and (current_media_info['track_number'] == 0):
                 #print('pass')
                 pass
+
+            elif ((current_media_info['album_artist'] is current_media_info['artist']) is current_media_info['title']) and (current_media_info['album_title'] is current_media_info['subtitle']) and (current_media_info['album_track_count'] is current_media_info['track_number']):
+                add_spot()
 
             else:
                 pass
@@ -280,6 +283,24 @@ def main():
         except Exception as e:
             break
 
+def add_spot():
+    while True:
+        try:
+            res = restart_app()
+            # print('add skiped')
+            if res is True:
+                while True:
+                    try:
+                        current_media_info_ = asyncio.run(get_media_info())
+                        asyncio.run(play_media(current_media_info_['title']))
+                        current_media_info_ = None
+                        break
+                    except Exception:
+                        continue
+            break
+        except Exception:
+            continue
+    time.sleep(1)
 
 if __name__ == '__main__':
     while True:
