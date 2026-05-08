@@ -195,29 +195,18 @@ async def play_media(album_title):
 
 
 
-''' 
-restart_time = 0
-
-        global restart_time
-        restart_time += 1
-
-
-        if restart_time == 1800: #1800
-
-            restart_path = 'restart.bat'
-
-            subprocess.Popen(
-                [restart_path, "--minimized", "--quiet"],
-                creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NO_WINDOW | subprocess.CREATE_BREAKAWAY_FROM_JOB | subprocess.SW_HIDE
-            )'''
-
 last_two = []
 
 def main():
+    restart_time = 0
     while True:
         try:
+            restart_time = restart_time + 1
 
             time.sleep(1)
+
+            if restart_time == 21600:
+                os.system('restart.vbs')
 
             current_media_info = asyncio.run(get_media_info())
             if len(last_two) == 2:
@@ -228,7 +217,7 @@ def main():
 
             #print(f'+{current_media_info}\n')
             #print(last_two)
-            # print(current_media_info)
+            #print(current_media_info)
 
             '''if input('>>>') == 'y':
                 time.sleep(10)
@@ -333,8 +322,5 @@ if __name__ == '__main__':
                 if spotify_windows:
                     print('1')
                     main()'''
-
-
-
         except Exception:
             pass
