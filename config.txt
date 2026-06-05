@@ -1,0 +1,4 @@
+# this file is only for names of ads
+//START//
+Μουσική, χωρίς διαφημίσεις.
+//END//
