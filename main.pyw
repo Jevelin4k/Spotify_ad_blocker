@@ -131,12 +131,17 @@ def restart_app():
 
         time.sleep(1)
 
-        subprocess.Popen(
-            [spotify_path, "--minimized", "--quiet"],
-            creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NO_WINDOW | subprocess.CREATE_BREAKAWAY_FROM_JOB | subprocess.SW_HIDE
-        )
-        hide_spotify()
-        return True
+        try:
+            time.sleep(1)
+            subprocess.Popen(
+                [spotify_path, "--minimized", "--quiet"],
+                creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NO_WINDOW | subprocess.CREATE_BREAKAWAY_FROM_JOB | subprocess.SW_HIDE
+            )
+            hide_spotify()
+            return True
+
+        except Exception:
+            return False
 
     except Exception as e:
         #print(e)
@@ -297,6 +302,8 @@ async def main():
 
 def on_exit(icon, item):
     icon.stop()
+    subprocess.Popen('TASKKILL /F /IM python.exe', stdout=subprocess.PIPE,
+                     creationflags=subprocess.CREATE_NO_WINDOW)
     sys.exit()
 
 
@@ -329,11 +336,11 @@ def load_icon():
 
 
 if __name__ == '__main__':
+    tray_thread = threading.Thread(target=load_icon, daemon=True)
+    tray_thread.start()
+
     while True:
         time.sleep(1)
-        tray_thread = threading.Thread(target=load_icon, daemon=True)
-        tray_thread.start()
-
         try:
             for proc in psutil.process_iter():
                 name = proc.name()
