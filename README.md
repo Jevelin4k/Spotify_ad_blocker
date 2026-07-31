@@ -11,3 +11,9 @@ Files will save in C:\Program Files (x86)\Spotify_ad_blocker
 
 1. Как удалить, открой C:\Program Files (x86)\Spotify_ad_blocker\Spotify_ad_blocker і открой [uninstall.bat](https://github.com/Jevelin4k/Spotify_ad_blocker/blob/main/uninstall.bat)
 2. Чтоб обновить, скачай или открой [update.bat](https://github.com/Jevelin4k/Spotify_ad_blocker/blob/main/update.bat)
+
+
+
+
+
+Link to one of downloads which comes with app: https://github.com/spicetify/cli
