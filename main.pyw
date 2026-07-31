@@ -127,16 +127,29 @@ def hide_spotify():
 def restart_app():
     try:
         kill()
-        spotify_path = os.path.expanduser("~") + "\\AppData\\Local\\Microsoft\\WindowsApps\\Spotify.exe"
+
+
+        if config_mangement().spicetify_config() is True:
+            spotify_path = "spicetify-2.44.0-windows-x64\\spicetify.exe"
+        elif config_mangement().spicetify_config() is False:
+            spotify_path = os.path.expanduser("~") + "\\AppData\\Local\\Microsoft\\WindowsApps\\Spotify.exe"
 
         time.sleep(1)
 
         try:
             time.sleep(1)
-            subprocess.Popen(
-                [spotify_path, "--minimized", "--quiet"],
-                creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NO_WINDOW | subprocess.CREATE_BREAKAWAY_FROM_JOB | subprocess.SW_HIDE
-            )
+            if config_mangement().spicetify_config() is True:
+                subprocess.Popen(
+                    [f'{spotify_path} apply -q', "--minimized", "--quiet"],
+                    creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NO_WINDOW | subprocess.CREATE_BREAKAWAY_FROM_JOB | subprocess.SW_HIDE
+                )
+
+            elif config_mangement().spicetify_config() is False:
+                subprocess.Popen(
+                    [spotify_path, "--minimized", "--quiet"],
+                    creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NO_WINDOW | subprocess.CREATE_BREAKAWAY_FROM_JOB | subprocess.SW_HIDE
+                )
+
             hide_spotify()
             return True
 
@@ -252,6 +265,23 @@ class config_mangement:
         with open('config.txt', 'w', encoding='utf-8') as cfg:
             cfg.write(content)
 
+    def spicetify_config(self):
+        with open('config.txt', 'r', encoding='utf-8') as cfg:
+            content = cfg.readlines()
+            return content[-1]
+
+    def spicetify_change(self):
+        with open('config.txt', 'r', encoding='utf-8') as cfg:
+            lines = cfg.readlines()
+
+        if not lines:
+            return
+
+        last = lines[-1].strip()
+        lines[-1] = ('False' if last == 'True' else 'True')
+
+        with open('config.txt', 'w', encoding='utf-8') as cfg:
+            cfg.writelines(lines)
 
 #/////MAIN/////
 
@@ -322,12 +352,24 @@ async def delete_config():
     config_mangement().delete_config()
 
 
+def spicetify_action_sync():
+    config_mangement().spicetify_change()
+    restart_app()
+
+def spicetify_config_get_status_sync():
+    return config_mangement().spicetify_config()
+
+
 def load_icon():
     img = Image.open('logo.png')
 
     menu = pystray.Menu(
         pystray.MenuItem('Manual add ad to list', manual_add_sync),
         pystray.MenuItem('Clear config', delete_config_sync),
+        pystray.MenuItem(
+            lambda item: f'Spicetify: {spicetify_config_get_status_sync()}',
+            spicetify_action_sync
+        ),
         pystray.MenuItem('Exit', on_exit)
     )
 
