@@ -16,6 +16,10 @@ pip install -r "C:\Program Files (x86)\Spotify_ad_blocker\Spotify_ad_blocker\req
 
 schtasks /create /tn "Spotify_ad_blocker" /tr "\"C:\Windows\System32\wscript.exe\" \"C:\Program Files (x86)\Spotify_ad_blocker\Spotify_ad_blocker\launch.vbs\"" /sc onlogon /rl highest /f
 
+choice /c YN /m "Download Spicetify?"
+if errorlevel 2 goto :skip
+winget install Spicetify.Spicetify
+:skip
 
 schtasks /run /tn "Spotify_ad_blocker"
 

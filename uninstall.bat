@@ -10,3 +10,7 @@ schtasks /delete /tn "Spotify_ad_blocker" /f
 
 TASKKILL /F /IM pythonw.exe
 rmdir "C:\Program Files (x86)\Spotify_ad_blocker" /s /q
+
+spicetify restore
+rmdir -r -fo $env:APPDATA\spicetify
+rmdir -r -fo $env:LOCALAPPDATA\spicetify
