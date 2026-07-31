@@ -130,7 +130,7 @@ def restart_app():
 
 
         if config_mangement().spicetify_config() is True:
-            spotify_path = "spicetify-2.44.0-windows-x64\\spicetify.exe"
+            spotify_path = "spicetify-2.44.0-windows-x64\\spicetify.exe apply -q"
         elif config_mangement().spicetify_config() is False:
             spotify_path = os.path.expanduser("~") + "\\AppData\\Local\\Microsoft\\WindowsApps\\Spotify.exe"
 
@@ -140,7 +140,7 @@ def restart_app():
             time.sleep(1)
             if config_mangement().spicetify_config() is True:
                 subprocess.Popen(
-                    [f'{spotify_path} apply -q', "--minimized", "--quiet"],
+                    [spotify_path, "--minimized", "--quiet"],
                     creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NO_WINDOW | subprocess.CREATE_BREAKAWAY_FROM_JOB | subprocess.SW_HIDE
                 )
 
