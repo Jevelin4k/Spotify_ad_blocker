@@ -23,4 +23,8 @@ winget install Spicetify.Spicetify
 
 schtasks /run /tn "Spotify_ad_blocker"
 
+DEL "update.bat" /s /q
+DEL "install.bat" /s /q
+DEL "requirements.txt" /s /q
+
 pause
