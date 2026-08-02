@@ -61,8 +61,11 @@ def get_active_window_title():
 
 
 def kill():
-    result = subprocess.Popen('TASKKILL /F /IM Spotify.exe', stdout=subprocess.PIPE,
-                              creationflags=subprocess.CREATE_NO_WINDOW)
+    try:
+        result = subprocess.Popen('TASKKILL /F /IM Spotify.exe', stdout=subprocess.PIPE,
+                                  creationflags=subprocess.CREATE_NO_WINDOW)
+    except Exception:
+        pass
     #print(result)
 
 
@@ -94,6 +97,7 @@ def find_spotify_window():
     win32gui.EnumWindows(enum_windows_callback, windows)
     return windows[0] if windows else None
 
+
 def hide_spotify():
     hwnd = find_spotify_window()
     if hwnd:
@@ -117,37 +121,72 @@ def hide_spotify():
                     spotify_windows = gw.getWindowsWithTitle("Spotify")
                     if spotify_windows:
                         spotify_windows[0].minimize()
+
+                    cmd = gw.getWindowsWithTitle("cmd")
+                    spotify = gw.getWindowsWithTitle("Spotify")
+                    if cmd:
+                        cmd[0].minimize()
+                        if spotify:
+                            spotify[0].minimize()
                     #print("Spotify показан")
-                    break
+                    return True
                 else:
                     #print("Spotify не найден")
                     continue
 
 
+
+
+def launch_spotify():
+    if config_mangement().spicetify_config() == 'False':
+        spotify_path = os.path.expanduser("~") + "\\AppData\\Local\\Microsoft\\WindowsApps\\Spotify.exe"
+
+    time.sleep(1)
+
+    try:
+        time.sleep(1)
+        if config_mangement().spicetify_config() == 'True':
+            subprocess.Popen(
+                ['spicetify-2.44.0-windows-x64\\spicetify.exe', 'auto', '-q'],
+                creationflags=subprocess.CREATE_NO_WINDOW
+            )
+
+        elif config_mangement().spicetify_config() == 'False':
+            subprocess.Popen(
+                [spotify_path, "--minimized", "--quiet"],
+                creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NO_WINDOW | subprocess.CREATE_BREAKAWAY_FROM_JOB | subprocess.SW_HIDE
+            )
+    except Exception:
+        pass
+
 def restart_app():
     try:
         kill()
 
-        if config_mangement().spicetify_config() is False:
+        if config_mangement().spicetify_config() == 'False':
             spotify_path = os.path.expanduser("~") + "\\AppData\\Local\\Microsoft\\WindowsApps\\Spotify.exe"
 
         time.sleep(1)
 
         try:
             time.sleep(1)
-            if config_mangement().spicetify_config() is True:
+            if config_mangement().spicetify_config() == 'True':
                 subprocess.Popen(
-                    ['spicetify-2.44.0-windows-x64\\spicetify.exe apply -q', "--minimized", "--quiet"],
-                    creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NO_WINDOW | subprocess.CREATE_BREAKAWAY_FROM_JOB | subprocess.SW_HIDE
+                    ['spicetify-2.44.0-windows-x64\\spicetify.exe', 'auto', '-q'],
+                    creationflags=subprocess.CREATE_NO_WINDOW
                 )
+                hide_spotify()
 
-            elif config_mangement().spicetify_config() is False:
+
+
+
+            elif config_mangement().spicetify_config() == 'False':
                 subprocess.Popen(
                     [spotify_path, "--minimized", "--quiet"],
                     creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NO_WINDOW | subprocess.CREATE_BREAKAWAY_FROM_JOB | subprocess.SW_HIDE
                 )
+                hide_spotify()
 
-            hide_spotify()
             return True
 
         except Exception:
@@ -351,7 +390,8 @@ async def delete_config():
 
 def spicetify_action_sync():
     config_mangement().spicetify_change()
-    restart_app()
+    kill()
+    launch_spotify()
 
 def spicetify_config_get_status_sync():
     return config_mangement().spicetify_config()
@@ -361,6 +401,7 @@ def load_icon():
     img = Image.open('logo.png')
 
     menu = pystray.Menu(
+        pystray.MenuItem('Launch Spotify', launch_spotify),
         pystray.MenuItem('Manual add ad to list', manual_add_sync),
         pystray.MenuItem('Clear config', delete_config_sync),
         pystray.MenuItem(
