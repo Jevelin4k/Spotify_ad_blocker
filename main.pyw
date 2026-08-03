@@ -122,10 +122,14 @@ def hide_spotify():
                     if spotify_windows:
                         spotify_windows[0].minimize()
 
+                    spotify_windows = gw.getWindowsWithTitle("Spotify Free")
+                    if spotify_windows:
+                        spotify_windows[0].minimize()
+
                     cmd = gw.getWindowsWithTitle("cmd")
-                    spotify = gw.getWindowsWithTitle("Spotify")
                     if cmd:
                         cmd[0].minimize()
+                        spotify = gw.getWindowsWithTitle("spicetify")
                         if spotify:
                             spotify[0].minimize()
                     #print("Spotify показан")
@@ -319,6 +323,26 @@ class config_mangement:
         with open('config.txt', 'w', encoding='utf-8') as cfg:
             cfg.writelines(lines)
 
+    def spotify_ad_blocker_config(self):
+        with open('config.txt', 'r', encoding='utf-8') as cfg:
+            content = cfg.readlines()
+            return content[-2]
+
+    def spotify_ad_blocker_change(self):
+        with open('config.txt', 'r', encoding='utf-8') as cfg:
+            lines = cfg.readlines()
+
+        if not lines:
+            return
+
+        last = lines[-2].strip()
+        lines[-2] = ('False\n' if last == 'True' else 'True\n')
+
+        with open('config.txt', 'w', encoding='utf-8') as cfg:
+            cfg.writelines(lines)
+
+
+
 #/////MAIN/////
 
 async def main():
@@ -368,9 +392,14 @@ async def main():
 
 def on_exit(icon, item):
     icon.stop()
-    subprocess.Popen('TASKKILL /F /IM python.exe', stdout=subprocess.PIPE,
-                     creationflags=subprocess.CREATE_NO_WINDOW)
-    sys.exit()
+    try:
+        subprocess.Popen('TASKKILL /F /IM pythonw.exe', stdout=subprocess.PIPE,
+                         creationflags=subprocess.CREATE_NO_WINDOW)
+    except Exception:
+        subprocess.Popen('TASKKILL /F /IM python.exe', stdout=subprocess.PIPE,
+                         creationflags=subprocess.CREATE_NO_WINDOW)
+    finally:
+        sys.exit()
 
 
 def manual_add_sync(icon, item):
@@ -397,6 +426,14 @@ def spicetify_config_get_status_sync():
     return config_mangement().spicetify_config()
 
 
+def spotify_ad_blocker_action_sync():
+    config_mangement().spotify_ad_blocker_change()
+
+def spotify_ad_blocker_status_sync():
+    return config_mangement().spotify_ad_blocker_config()
+
+
+
 def load_icon():
     img = Image.open('logo.png')
 
@@ -407,6 +444,10 @@ def load_icon():
         pystray.MenuItem(
             lambda item: f'Spicetify: {spicetify_config_get_status_sync()}',
             spicetify_action_sync
+        ),
+        pystray.MenuItem(
+            lambda item: f'Ad blocker: {spotify_ad_blocker_status_sync()}',
+            spotify_ad_blocker_action_sync
         ),
         pystray.MenuItem('Exit', on_exit)
     )
@@ -420,26 +461,33 @@ if __name__ == '__main__':
     tray_thread.start()
 
     while True:
-        time.sleep(1)
         try:
-            for proc in psutil.process_iter():
-                name = proc.name()
-                if name == "Spotify.exe":
-                    try:
-                        asyncio.run(main())
+            if config_mangement().spotify_ad_blocker_config() == 'True':
+                time.sleep(1)
+                try:
+                    for proc in psutil.process_iter():
+                        name = proc.name()
+                        if name == "Spotify.exe":
+                            try:
+                                asyncio.run(main())
 
-                        current_media_info = None
-                        spotify_windows = None
-                        name = None
-                        proc = None
-                        #main_proc = None
-                    except Exception as e:
-                        #print(e)
-                        current_media_info = None
-                        spotify_windows = None
-                    break
+                                current_media_info = None
+                                spotify_windows = None
+                                name = None
+                                proc = None
+                                #main_proc = None
+                            except Exception as e:
+                                #print(e)
+                                current_media_info = None
+                                spotify_windows = None
+                            break
 
-                else:
-                    continue
+                        else:
+                            continue
+                except Exception:
+                    pass
+            elif config_mangement().spotify_ad_blocker_config() == 'False':
+                time.sleep(60)
+                continue
         except Exception:
             pass
