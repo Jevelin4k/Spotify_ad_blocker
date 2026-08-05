@@ -13,7 +13,7 @@ rmdir "C:\Program Files (x86)\Spotify_ad_blocker" /s /q
 
 
 
-winget install python3.11 --accept-source-agreements --silent
+winget install python3.12 --accept-source-agreements --silent
 python.exe -m pip install --upgrade pip
 
 mkdir "C:\Program Files (x86)\Spotify_ad_blocker"
