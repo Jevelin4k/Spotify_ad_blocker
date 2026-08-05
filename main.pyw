@@ -462,7 +462,7 @@ if __name__ == '__main__':
 
     while True:
         try:
-            if config_mangement().spotify_ad_blocker_config() == 'True':
+            if config_mangement().spotify_ad_blocker_config() == 'True\n':
                 time.sleep(1)
                 try:
                     for proc in psutil.process_iter():
@@ -486,8 +486,8 @@ if __name__ == '__main__':
                             continue
                 except Exception:
                     pass
-            elif config_mangement().spotify_ad_blocker_config() == 'False':
-                time.sleep(60)
+            elif config_mangement().spotify_ad_blocker_config() == 'False\n':
+                time.sleep(3)
                 continue
         except Exception:
             pass
