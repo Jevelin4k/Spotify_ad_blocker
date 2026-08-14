@@ -5,7 +5,7 @@ if %errorlevel% neq 0 (
     exit /b
 )
 
-winget install git.git
+winget install git.git --accept-source-agreements --silent
 winget install python3.12 --accept-source-agreements --silent
 python.exe -m pip install --upgrade pip
 
