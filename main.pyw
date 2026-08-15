@@ -97,46 +97,16 @@ def find_spotify_window():
     win32gui.EnumWindows(enum_windows_callback, windows)
     return windows[0] if windows else None
 
-
-def hide_spotify():
-    hwnd = find_spotify_window()
-    if hwnd:
-        # Скрываем окно (SW_HIDE = 0) [citation:5]
-        win32gui.ShowWindow(hwnd, win32con.SW_HIDE)
-        #print("Spotify скрыт")
-    else:
-        #print("Spotify не найден")
-        for _ in range(10):
-            time.sleep(0.1)
-            hwnd = find_spotify_window()
-            if hwnd:
-                # Скрываем окно (SW_HIDE = 0) [citation:5]
-                win32gui.ShowWindow(hwnd, win32con.SW_HIDE)
-                #print("Spotify скрыт")
-
-                if hwnd:
-                    # Показываем окно (SW_SHOW = 5)
-                    win32gui.ShowWindow(hwnd, win32con.SW_SHOW)
-
-                    spotify_windows = gw.getWindowsWithTitle("Spotify")
-                    if spotify_windows:
-                        spotify_windows[0].minimize()
-
-                    spotify_windows = gw.getWindowsWithTitle("Spotify Free")
-                    if spotify_windows:
-                        spotify_windows[0].minimize()
-
-                    cmd = gw.getWindowsWithTitle("cmd")
-                    if cmd:
-                        cmd[0].minimize()
-                        spotify = gw.getWindowsWithTitle("spicetify")
-                        if spotify:
-                            spotify[0].minimize()
-                    #print("Spotify показан")
-                    return True
-                else:
-                    #print("Spotify не найден")
-                    continue
+def hide_spotify(timeout_sec=15, poll_interval=0.2):
+    deadline = time.time() + timeout_sec
+    found = False
+    while time.time() < deadline:
+        hwnd = find_spotify_window()
+        if hwnd and not win32gui.IsIconic(hwnd):
+            win32gui.CloseWindow(hwnd)
+            found = True
+        time.sleep(poll_interval)
+    return found
 
 
 
@@ -157,13 +127,14 @@ def launch_spotify():
                 [SPICETIFY_PATH, 'auto', '-q'],
                 creationflags=subprocess.CREATE_NO_WINDOW
             )
-            hide_spotify()
+            hide_spotify(15)
 
         elif config_mangement().spicetify_config() == 'False':
             subprocess.Popen(
                 [spotify_path, "--minimized", "--quiet"],
                 creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NO_WINDOW | subprocess.CREATE_BREAKAWAY_FROM_JOB | subprocess.SW_HIDE
             )
+            hide_spotify(5)
     except Exception:
         pass
 
@@ -186,7 +157,7 @@ def restart_app():
                     [SPICETIFY_PATH, 'auto', '-q'],
                     creationflags=subprocess.CREATE_NO_WINDOW
                 )
-                hide_spotify()
+                hide_spotify(15)
 
 
 
@@ -196,7 +167,7 @@ def restart_app():
                     [spotify_path, "--minimized", "--quiet"],
                     creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NO_WINDOW | subprocess.CREATE_BREAKAWAY_FROM_JOB | subprocess.SW_HIDE
                 )
-                hide_spotify()
+                hide_spotify(5)
 
             return True
 
