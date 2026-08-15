@@ -150,10 +150,14 @@ def launch_spotify():
     try:
         time.sleep(1)
         if config_mangement().spicetify_config() == 'True':
+            BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+            SPICETIFY_PATH = os.path.join(BASE_DIR, 'spicetify-2.44.0-windows-x64', 'spicetify.exe')
+
             subprocess.Popen(
-                ['spicetify-2.44.0-windows-x64\\spicetify.exe', 'auto', '-q'],
+                [SPICETIFY_PATH, 'auto', '-q'],
                 creationflags=subprocess.CREATE_NO_WINDOW
             )
+            hide_spotify()
 
         elif config_mangement().spicetify_config() == 'False':
             subprocess.Popen(
@@ -175,8 +179,11 @@ def restart_app():
         try:
             time.sleep(1)
             if config_mangement().spicetify_config() == 'True':
+                BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+                SPICETIFY_PATH = os.path.join(BASE_DIR, 'spicetify-2.44.0-windows-x64', 'spicetify.exe')
+
                 subprocess.Popen(
-                    ['spicetify-2.44.0-windows-x64\\spicetify.exe', 'auto', '-q'],
+                    [SPICETIFY_PATH, 'auto', '-q'],
                     creationflags=subprocess.CREATE_NO_WINDOW
                 )
                 hide_spotify()
@@ -308,7 +315,7 @@ class config_mangement:
     def spicetify_config(self):
         with open('config.txt', 'r', encoding='utf-8') as cfg:
             content = cfg.readlines()
-            return content[-1]
+            return content[-1].strip()
 
     def spicetify_change(self):
         with open('config.txt', 'r', encoding='utf-8') as cfg:
@@ -459,6 +466,14 @@ def load_icon():
 if __name__ == '__main__':
     tray_thread = threading.Thread(target=load_icon, daemon=True)
     tray_thread.start()
+
+    spotify_path = os.path.expanduser("~") + "\\AppData\\Local\\Microsoft\\WindowsApps\\Spotify.exe"
+    subprocess.Popen(
+        [spotify_path, "--minimized", "--quiet"],
+        creationflags=subprocess.DETACHED_PROCESS | subprocess.CREATE_NO_WINDOW | subprocess.CREATE_BREAKAWAY_FROM_JOB | subprocess.SW_HIDE
+    )
+    time.sleep(1)
+    kill()
 
     while True:
         try:
